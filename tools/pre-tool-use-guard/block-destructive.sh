@@ -86,11 +86,20 @@ fi
 # Explicitly excludes --force-with-lease and --force-if-includes (safe alternatives)
 if printf '%s' "$CMD_LOWER" | grep -qE 'git\s+push\s'; then
   if printf '%s' "$CMD_LOWER" | grep -qE '\s--force(\s|$)|\s-f(\s|$)'; then
-    # Exclude safe variants
     if ! printf '%s' "$CMD_LOWER" | grep -qE '\s--force-with-lease|\s--force-if-includes'; then
       block "Force push (git push --force)"
     fi
   fi
+fi
+
+# --- git reset --hard ---
+if printf '%s' "$CMD_LOWER" | grep -qE 'git\s+reset\s+--hard'; then
+  block "Destructive git operation (git reset --hard discards all uncommitted changes)"
+fi
+
+# --- git clean -fd ---
+if printf '%s' "$CMD_LOWER" | grep -qE 'git\s+clean\s+-[a-z]*f[a-z]*d|git\s+clean\s+-[a-z]*d[a-z]*f'; then
+  block "Destructive git operation (git clean -fd removes untracked files and directories)"
 fi
 
 # --- SQL: DROP TABLE ---
